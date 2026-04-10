@@ -17,6 +17,7 @@
 #include <linux/perf_event.h>
 #include <linux/resource.h>
 #include <linux/kernel.h>
+#include <linux/init.h>
 #include <linux/workqueue.h>
 #include <linux/capability.h>
 #include <linux/device.h>
@@ -155,6 +156,40 @@ int fs_overflowgid = DEFAULT_FS_OVERFLOWGID;
 
 EXPORT_SYMBOL(fs_overflowuid);
 EXPORT_SYMBOL(fs_overflowgid);
+
+#ifndef CONFIG_FAKE_UNAME_NONE
+static bool legacy_ebpf __read_mostly;
+
+static int __init setup_legacy_ebpf(char *arg)
+{
+	bool enabled;
+
+	if (kstrtobool(arg, &enabled))
+		return 0;
+
+	legacy_ebpf = enabled;
+	return 1;
+}
+
+static int __init setup_androidboot_legacy_ebpf(char *arg)
+{
+	return setup_legacy_ebpf(arg);
+}
+
+__setup("legacy_ebpf=", setup_legacy_ebpf);
+__setup("androidboot.legacy_ebpf=", setup_androidboot_legacy_ebpf);
+
+static bool should_fake_oneui_bpf_uname(void)
+{
+	if (legacy_ebpf || !uid_eq(current_uid(), GLOBAL_ROOT_UID))
+		return false;
+
+	return !strncmp(current->comm, "bpfloader", 9) ||
+	       !strncmp(current->comm, "netbpfload", 10) ||
+	       !strncmp(current->comm, "netd", 4) ||
+	       !strncmp(current->comm, "uprobestats", 11);
+}
+#endif
 
 /*
  * Returns true if current's euid is same as p's uid or euid,
@@ -1261,10 +1296,7 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 	down_read(&uts_sem);
 	memcpy(&tmp, utsname(), sizeof(tmp));
 #ifndef CONFIG_FAKE_UNAME_NONE
-	if (!strncmp(current->comm, "bpfloader", 9) ||
-	    !strncmp(current->comm, "netbpfload", 10) ||
-	    !strncmp(current->comm, "netd", 4) ||
-	    !strncmp(current->comm, "uprobestats", 11)) {
+	if (should_fake_oneui_bpf_uname()) {
 #if defined(CONFIG_FAKE_UNAME_5_4)
 		strcpy(tmp.release, "5.4.200");
 #elif defined(CONFIG_FAKE_UNAME_5_10)
