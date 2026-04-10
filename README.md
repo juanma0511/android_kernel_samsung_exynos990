@@ -9,7 +9,7 @@ https://source.android.com/docs/setup/start/requirements
 
 2. Properly clone repository with submodules (KernelSU and toolchains)
 
-```git clone --recurse-submodules https://github.com/Android-Artisan/android_kernel_samsung_exynos990.git```
+```git clone --recurse-submodules https://github.com/juanma0511/android_kernel_samsung_exynos990.git```
 
 3. Build for your device without CCache and with KSU
 
@@ -17,7 +17,7 @@ https://source.android.com/docs/setup/start/requirements
 
 4. Fetch the flashable zip of the kernel that was just compiled
 
-```build/out/[your_device]/ArtisanKRNL...zip```
+```build/out/[your_device]/_[device]_UNOFFICIAL_KSU_(DATE)...zip```
 
 5. Flash it using a supported recovery like TWRP either using the install function or ADB Sideload
 
