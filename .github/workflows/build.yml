@@ -41,9 +41,9 @@ jobs:
         run: curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master
 
       - name: Patch SUSFS into KernelSU
-        run: cp 0001-patch-susfs-into-kernelsu.patch KernelSU/ && \
+        run: cp 0001-xxKSU-kernel-implement-susfs-v2.1.0-De-inlined.patch KernelSU/ && \
           cd KernelSU && \
-          patch -p1 < 0001-patch-susfs-into-kernelsu.patch      
+          patch -p1 < 0001-xxKSU-kernel-implement-susfs-v2.1.0-De-inlined.patch      
 
       - name: Make build script executable
         run: chmod +x build.sh

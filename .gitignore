@@ -33,7 +33,6 @@
 *.o
 *.o.*
 *.order
-*.patch
 *.s
 *.so
 *.so.dbg
@@ -135,6 +134,5 @@ all.config
 #post-build files
 *.rej
 *.orig
-*.patch
 out/
 toolchain/
