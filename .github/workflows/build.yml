@@ -1,4 +1,4 @@
-name: Build ArtisanKRNL
+name: Build Kernel
 
 on:
   workflow_dispatch:
@@ -36,6 +36,14 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo apt clean
+
+      - name: Curl KernelSU
+        run: curl -LSs "https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master
+
+      - name: Patch SUSFS into KernelSU
+        run: cp 0001-patch-susfs-into-kernelsu.patch KernelSU/ && \
+          cd KernelSU && \
+          patch -p1 < 0001-patch-susfs-into-kernelsu.patch      
 
       - name: Make build script executable
         run: chmod +x build.sh
